@@ -1,79 +1,38 @@
-//{ Driver Code Starts
-import java.io.*;
-import java.util.*;
-
-class Node {
-    int data;
-    Node next;
-
-    Node(int x) {
-        data = x;
-        next = null;
-    }
-}
-
-
-// } Driver Code Ends
-
-/* class Node
-{
-    int data;
-    Node next;
-    Node(int data)
-    {
-        this.data = data;
-        next = null;
-    }
-}*/
 class Solution {
-    static Node segregate(Node head) {
-        int[] count = new int[3];
-        for (Node curr = head; curr != null; curr = curr.next) count[curr.data]++;
-        Node curr = head;
-        for (int i = 0; i < 3; i++)
-            while (count[i]-- > 0) { curr.data = i; curr = curr.next; }
+    public Node segregate(Node head) {
+        if (head == null) return head;
+        
+        Node zero = null, one = null, two = null;
+        Node zTail = null, oTail = null, tTail = null;
+        
+        while (head != null) {
+            Node next = head.next;
+            head.next = null;
+            
+            if (head.data == 0) {
+                if (zero == null) zero = zTail = head;
+                else zTail = zTail.next = head;
+            } else if (head.data == 1) {
+                if (one == null) one = oTail = head;
+                else oTail = oTail.next = head;
+            } else {
+                if (two == null) two = tTail = head;
+                else tTail = tTail.next = head;
+            }
+            head = next;
+        }
+        
+        if (zTail != null) {
+            head = zero;
+            zTail.next = (one != null) ? one : two;
+            if (oTail != null) oTail.next = two;
+        } else if (oTail != null) {
+            head = one;
+            oTail.next = two;
+        } else {
+            head = two;
+        }
+        
         return head;
     }
 }
-
-
-
-//{ Driver Code Starts.
-
-class GFG {
-    public static void printList(Node node) {
-        while (node != null) {
-            System.out.print(node.data + " ");
-            node = node.next;
-        }
-        System.out.println();
-    }
-
-    public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        int t = Integer.parseInt(br.readLine().trim());
-
-        while (t-- > 0) {
-            List<Integer> arr = new ArrayList<>();
-            String input = br.readLine().trim();
-            StringTokenizer st = new StringTokenizer(input);
-            while (st.hasMoreTokens()) {
-                arr.add(Integer.parseInt(st.nextToken()));
-            }
-
-            Node head = null;
-            if (!arr.isEmpty()) {
-                head = new Node(arr.get(0));
-                Node tail = head;
-                for (int i = 1; i < arr.size(); i++) {
-                    tail.next = new Node(arr.get(i));
-                    tail = tail.next;
-                }
-            }
-            head = new Solution().segregate(head);
-            printList(head);
-            System.out.println("~");
-        }
-    }
-}
-// } Driver Code Ends
