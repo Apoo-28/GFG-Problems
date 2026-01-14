@@ -1,14 +1,23 @@
 class Solution {
     public int catchThieves(char[] arr, int k) {
-        int i = 0, j = 0, n = arr.length, c = 0;
-        while (i < n && j < n) {
-            while (i < n && arr[i] != 'P') i++;
-            while (j < n && arr[j] != 'T') j++;
-            if (i < n && j < n && Math.abs(i - j) <= k) {
-                i++; j++; c++;
-            } else if (j < i) j++;
-            else i++;
+        int p = 0; 
+        int t = 0; 
+        int count = 0; 
+        while(p < arr.length && t < arr.length) {
+            while(p < arr.length && arr[p] != 'P') p++;
+            while(t < arr.length && arr[t] != 'T') t++;
+            if(p >= arr.length || t >= arr.length) break ; 
+         
+            if(Math.abs(p-t) <= k) {
+                count++;
+                arr[p] = 'C';
+                arr[t] = 'C';
+            } else if(p < t)
+                p++;
+            else
+                t++;
         }
-        return c;
+        
+        return count;
     }
 }
