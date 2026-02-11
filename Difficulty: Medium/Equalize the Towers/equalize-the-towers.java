@@ -1,19 +1,27 @@
 class Solution {
-    public int minCost(int[] heights, int[] cost) {
-        int l = 0, h = Arrays.stream(heights).max().getAsInt();
-        while (l < h) {
-            int m = l + (h - l) / 2;
-            long c1 = 0, c2 = 0;
-            for (int i = 0; i < heights.length; ++i) {
-                c1 += (long)Math.abs(heights[i] - m) * cost[i];
-                c2 += (long)Math.abs(heights[i] - m - 1) * cost[i];
-            }
-            if (c1 <= c2) h = m;
-            else l = m + 1;
+    public int calculateCost(int[] heights, int[] costs, int h) {
+        int cost = 0;
+        for(int i=0; i<heights.length; i++) {
+            cost += Math.abs(heights[i] - h) * costs[i];
         }
-        long ans = 0;
-        for (int i = 0; i < heights.length; ++i)
-            ans += (long)Math.abs(heights[i] - l) * cost[i];
-        return (int)ans;
+        return cost;
+    }
+    
+    public int minCost(int[] heights, int[] cost) {
+        int low = Arrays.stream(heights).min().getAsInt();
+        int high = Arrays.stream(heights).max().getAsInt();
+        
+        while(low <= high) {
+            int mid = (low + high) >>> 1;
+            int c0 = calculateCost(heights, cost, mid - 1);
+            int c1 = calculateCost(heights, cost, mid);
+            int c2 = calculateCost(heights, cost, mid + 1);
+            
+            if(c1 <= c0 && c1 <= c2) return c1;
+            else if(c0 >= c1 && c1 >= c2) low = mid + 1;
+            else high = mid - 1;
+        }
+        
+        return -1;
     }
 }
