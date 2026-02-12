@@ -1,37 +1,56 @@
 class Solution {
-    boolean isPossible(int[] arr, int k, int w, int maxHeight) {
-        int n = arr.length;
-        int[] water = new int[n];
-        for (int i = 0; i < n; i++) {
-            if (i > 0) water[i] = water[i - 1];
-            int currHeight = arr[i] + water[i];
-            if (i >= w) currHeight -= water[i - w];
-            if (currHeight < maxHeight) {
-                int add = maxHeight - currHeight;
-                water[i] += add;
-                k -= add;
-                if (k < 0) return false;
-            }
-        }
-        return true;
-    }
-    
     public int maxMinHeight(int[] arr, int k, int w) {
         int n = arr.length;
-        int low = arr[0];
-        for (int i = 1; i < n; i++) {
-            if (arr[i] < low) low = arr[i];
+        
+        int low = Integer.MAX_VALUE;
+        int high = Integer.MIN_VALUE;
+        
+        for (int num : arr) {
+            low = Math.min(low, num);
+            high = Math.max(high, num);
         }
-        int high = low + k, ans = low;
+        
+        high = high + k; // maximum possible height
+        
+        int ans = low;
+        
         while (low <= high) {
             int mid = low + (high - low) / 2;
-            if (isPossible(arr, k, w, mid)) {
-                ans = Math.max(ans, mid);
-                low = mid + 1;
+            
+            if (canAchieve(arr, n, k, w, mid)) {
+                ans = mid;
+                low = mid + 1;   // try higher minimum
             } else {
                 high = mid - 1;
             }
         }
+        
         return ans;
+    }
+    
+    private boolean canAchieve(int[] arr, int n, int k, int w, int target) {
+        long[] diff = new long[n + 1];
+        long operations = 0;
+        long currentWater = 0;
+        
+        for (int i = 0; i < n; i++) {
+            currentWater += diff[i];
+            
+            long currentHeight = arr[i] + currentWater;
+            
+            if (currentHeight < target) {
+                long need = target - currentHeight;
+                operations += need;
+                
+                if (operations > k) return false;
+                
+                currentWater += need;
+                
+                if (i + w < diff.length)
+                    diff[i + w] -= need;
+            }
+        }
+        
+        return operations <= k;
     }
 }
